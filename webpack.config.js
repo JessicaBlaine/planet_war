@@ -4,7 +4,7 @@ module.exports = {
   context: __dirname,
   entry: "./javascript/planet_war.jsx",
   output: {
-    path: "./javascript/",
+    path: "./",
     filename: "bundle.js"
   },
   module: {
