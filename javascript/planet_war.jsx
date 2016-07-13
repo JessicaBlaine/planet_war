@@ -9,7 +9,7 @@ const hashHistory = ReactRouter.hashHistory;
 // components
 const Screen = require('./components/screen');
 // game logic
-const Game = require('./planet_war/game');
+const  Game = window.Game = require('./planet_war/game');
 
 const GameRouter = (
   <Router history={ hashHistory }>

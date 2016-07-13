@@ -8,5 +8,7 @@ function Game() {
 Game.prototype.run = function () {
   this.map.nextFrame();
 
-  requestAnimationFrame(this.run);
+  requestAnimationFrame(this.run.bind(this));
 };
+
+module.exports = Game;

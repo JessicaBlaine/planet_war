@@ -12,6 +12,7 @@
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
     "react-router": "^2.5.1",
+    "victor": "^1.1.0",
     "webpack": "^1.13.1"
   },
   "devDependencies": {},
