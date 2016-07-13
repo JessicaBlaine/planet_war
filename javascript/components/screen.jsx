@@ -1,10 +1,19 @@
 const React = require('react');
 
-const Screen = React.createClass({
+const GameMap = require('./game_map');
 
+const Screen = React.createClass({
+  getInitialState: function() {
+    return {
+      gameMap: this.props.game.gameMap
+    };
+  },
+  componentDidMount() {
+    this.props.game.run(this);
+  },
   render() {
     return <div className="screen">
-      {this.props.children}
+      <GameMap gameMap={ this.state.gameMap }/>
     </div>;
   }
 });

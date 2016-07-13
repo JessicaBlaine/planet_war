@@ -1,10 +1,41 @@
 
 function Planet(id, position) {
   this.id = id;
-  this.ownerId = id;
+  if (id === 0) {
+    this.owner = "player-one";
+  }
+  else if (id === 1) {
+    this.owner = "player-two";
+  }
+  else {
+    this.owner = "neutral";
+  }
   this.xPos = position[0];
   this.yPos = position[1];
-  this.radius = 15;
+  this.radius = 25;
+
+  this.friendlyUnits = 0;
 }
+
+Planet.prototype.defend = function (num, playerName) {
+  const result = this.friendlyUnits - num;
+  if (result < 0) {
+    this.owner = playerName;
+    this.friendlyUnits = 0 - result;
+  }
+  else if (result >= 0) {
+    this.friendlyUnits = result;
+  }
+};
+
+Planet.prototype.reinforce = function (num) {
+  this.friendlyUnits += num;
+};
+
+Planet.prototype.moveOut = function () {
+  let units = Math.floor(this.friendlyUnits / 2);
+  this.friendlyUnits -= units;
+  return units;
+};
 
 module.exports = Planet;
