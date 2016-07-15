@@ -2,7 +2,7 @@ const React = require('react');
 
 const Planet = React.createClass({
   render() {
-    let radius = this.props.planet.radius + (this.props.planet.countDown / 60);
+    let radius = this.props.planet.radius + Math.floor(this.props.planet.countDown / 30);
     let style = {
       width: radius * 2,
       height: radius * 2,

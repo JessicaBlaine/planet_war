@@ -51,11 +51,17 @@ GameMap.prototype.nextFrame = function () {
   this.units.forEach(unit => unit.nextFrame());
   this.planets.forEach(planet => {
     planet.nextFrame();
-    if (planet.owner === "playerTwo" && planet.friendlyUnits >= 10) {
+    if (planet.owner === "playerTwo" && planet.friendlyUnits >= 9) {
       // let target = planet.getTarget(this.planets);
-      let target = this.planets.reduce((prev, curr) => {
+      // debugger;
+      let planets = this.planets.filter(enemyPlanet => {
+        return enemyPlanet.owner !== "playerTwo";
+      });
+      console.log(planets);
+      let target = planets.reduce((prev, curr) => {
         return prev.friendlyUnits <= curr.friendlyUnits ? prev : curr;
       });
+      console.log(planet, target);
       this.attackMove(planet, target);
     }
   });

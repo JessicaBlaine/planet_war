@@ -26765,7 +26765,7 @@
 	var Planet = React.createClass({
 	  displayName: "Planet",
 	  render: function render() {
-	    var radius = this.props.planet.radius + this.props.planet.countDown / 60;
+	    var radius = this.props.planet.radius + Math.floor(this.props.planet.countDown / 30);
 	    var style = {
 	      width: radius * 2,
 	      height: radius * 2,
@@ -26900,11 +26900,17 @@
 	  });
 	  this.planets.forEach(function (planet) {
 	    planet.nextFrame();
-	    if (planet.owner === "playerTwo" && planet.friendlyUnits >= 10) {
+	    if (planet.owner === "playerTwo" && planet.friendlyUnits >= 9) {
 	      // let target = planet.getTarget(this.planets);
-	      var target = _this2.planets.reduce(function (prev, curr) {
+	      // debugger;
+	      var planets = _this2.planets.filter(function (enemyPlanet) {
+	        return enemyPlanet.owner !== "playerTwo";
+	      });
+	      console.log(planets);
+	      var target = planets.reduce(function (prev, curr) {
 	        return prev.friendlyUnits <= curr.friendlyUnits ? prev : curr;
 	      });
+	      console.log(planet, target);
 	      _this2.attackMove(planet, target);
 	    }
 	  });
@@ -27038,6 +27044,9 @@
 	  if (this.countDown === 0) {
 	    this.friendlyUnits += 1;
 	    this.countDown = 120;
+	    if (this.owner === "neutral" && this.friendlyUnits > 10) {
+	      this.friendlyUnits = 10;
+	    }
 	  }
 	};
 	

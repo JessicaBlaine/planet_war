@@ -23,6 +23,9 @@ Planet.prototype.nextFrame = function () {
   if (this.countDown === 0) {
     this.friendlyUnits += 1;
     this.countDown = 120;
+    if (this.owner === "neutral" && this.friendlyUnits > 10) {
+      this.friendlyUnits = 10;
+    }
   }
 };
 
