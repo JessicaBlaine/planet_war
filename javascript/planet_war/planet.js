@@ -2,10 +2,10 @@
 function Planet(id, position) {
   this.id = id;
   if (id === 0) {
-    this.owner = "player-one";
+    this.owner = "playerOne";
   }
   else if (id === 1) {
-    this.owner = "player-two";
+    this.owner = "playerTwo";
   }
   else {
     this.owner = "neutral";
@@ -15,14 +15,14 @@ function Planet(id, position) {
   this.radius = 25;
 
   this.friendlyUnits = 0;
-  this.countDown = 240;
+  this.countDown = 180;
 }
 
 Planet.prototype.nextFrame = function () {
   this.countDown -= 1;
   if (this.countDown === 0) {
     this.friendlyUnits += 1;
-    this.countDown = 240;
+    this.countDown = 180;
   }
 };
 

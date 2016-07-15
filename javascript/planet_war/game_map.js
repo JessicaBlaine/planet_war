@@ -35,6 +35,17 @@ GameMap.prototype.generateUnits = function () {
   });
 };
 
+GameMap.prototype.unitCounts = function () {
+  const counts = { playerOne: 0, playerTwo: 0, neutral: 0 };
+  this.units.forEach(unit => {
+    counts[unit.owner] += 1;
+  });
+  this.planets.forEach(planet => {
+    counts[planet.owner] += planet.friendlyUnits;
+  });
+  return counts;
+};
+
 GameMap.prototype.nextFrame = function () {
   // console.log("next frame");
   this.units.forEach(unit => unit.nextFrame());

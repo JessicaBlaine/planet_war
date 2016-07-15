@@ -2,6 +2,7 @@ const React = require('react');
 
 const Planet = require('./planet');
 const Unit = require('./unit');
+const ProgressBar = require('./progress_bar');
 
 const GameMap = React.createClass({
   getInitialState: function() {
@@ -24,8 +25,14 @@ const GameMap = React.createClass({
       <div>
         {
           this.props.gameMap.planets.map(planet => {
+            let selected = "";
+            if (planet === this.state.selectedPlanet) {
+              selected = "selected";
+            }
             return <Planet handleClick={this.attackMove}
-                           key={ planet.id } planet={ planet }/>;
+                           key={ planet.id }
+                           planet={ planet }
+                           selected={ selected }/>;
           })
         }
       </div>
@@ -36,6 +43,7 @@ const GameMap = React.createClass({
           })
         }
       </div>
+      <ProgressBar units={ this.props.gameMap.unitCounts() }/>
     </div>;
   }
 });

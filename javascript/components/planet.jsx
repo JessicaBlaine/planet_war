@@ -1,18 +1,8 @@
 const React = require('react');
 
 const Planet = React.createClass({
-  getInitialState: function() {
-    return {
-      selected: undefined
-    };
-  },
-  handleSelect() {
-    if (this.state.selected) {
-      this.props.attackMove(this.state.selected, this.props.planet);
-    }
-  },
   render() {
-    let radius = this.props.planet.radius;
+    let radius = this.props.planet.radius + (this.props.planet.countDown / 60);
     let style = {
       width: radius * 2,
       height: radius * 2,
@@ -21,7 +11,7 @@ const Planet = React.createClass({
       bottom: (this.props.planet.yPos - radius) + "px"
     };
     return <div onClick={this.props.handleClick.bind(null, this.props.planet)}
-                className={ "planet " + this.props.planet.owner }
+                className={ "planet " + this.props.planet.owner + " " + this.props.selected }
                 style={ style }>
       {this.props.planet.friendlyUnits}
     </div>;

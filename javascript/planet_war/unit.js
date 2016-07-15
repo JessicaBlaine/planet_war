@@ -1,7 +1,7 @@
 var Victor = require('victor');
 
 function Unit(id, ownerId, position) {
-  this.owner = ownerId === 0 ? "player-one" : "player-two";
+  this.owner = ownerId === 0 ? "playerOne" : "playerTwo";
   this.id = id;
   this.xPos = position[0];
   this.yPos = position[1];

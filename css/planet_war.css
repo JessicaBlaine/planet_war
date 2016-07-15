@@ -1,17 +1,38 @@
 
 .screen {
-  position: absolute;
+  position: relative;
   margin: 0 auto;
   width: 1000px;
   height: 600px;
   border: 1px solid grey;
-  background: lightgrey;
+  background: whitesmoke;
 }
 
 .map {
   position: relative;
   width: 100%;
   height: 100%;
+}
+
+.progress-bar {
+  position: absolute;
+  bottom: -20px;
+  height: 20px;
+  display: flex;
+  width: 100%;
+}
+
+.playerOne {
+  background: #116611;
+  transition: flex 0.3s ease-in-out 0s;
+}
+.neutral {
+  background: grey;
+  transition: flex 0.3s ease-in-out 0s;
+}
+.playerTwo {
+  background: #801515;
+  transition: flex 0.3s ease-in-out 0s;
 }
 
 .unit, .planet {
@@ -21,27 +42,34 @@
   overflow: visible;
 }
 .planet {
+  color: white;
   box-sizing: border-box;
   text-align: center;
   padding-top: 12px;
   background: grey;
+  transition: width 0.2s ease-out 0s, height 0.2s ease-out 0s,
+    left 0.2s ease-out 0s, bottom 0.2s ease-out 0s;
 }
-.planet:hover, .planet.selected {
-  box-shadow: 0 0 0 4px lightgreen;
+.planet.playerOne:hover, .planet.neutral:hover, .planet.selected {
+  box-shadow: 0 0 0 3px #004400;
 }
 
-.unit.player-one {
+.planet.target {
+  box-shadow: 0 0 0 2px
+}
+
+.unit.playerOne {
   background: url(http://res.cloudinary.com/nevermorte/image/upload/a_180/v1468020684/down-arrow_1_pf0eyo.png);
   background-size: cover;
   /*background: lightgreen;*/
 }
-.planet.player-one {
-  background: green;
+.planet.playerOne {
+  background: #116611;
 }
 
-.unit.player-two {
-  background: orange;
+.unit.playerTwo {
+  background: #AA3939;
 }
-.planet.player-two {
-  background: red;
+.planet.playerTwo {
+  background: #801515;
 }

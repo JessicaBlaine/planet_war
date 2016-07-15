@@ -26698,6 +26698,7 @@
 	
 	var Planet = __webpack_require__(236);
 	var Unit = __webpack_require__(237);
+	var ProgressBar = __webpack_require__(243);
 	
 	var GameMap = React.createClass({
 	  displayName: 'GameMap',
@@ -26725,8 +26726,14 @@
 	        'div',
 	        null,
 	        this.props.gameMap.planets.map(function (planet) {
+	          var selected = "";
+	          if (planet === _this.state.selectedPlanet) {
+	            selected = "selected";
+	          }
 	          return React.createElement(Planet, { handleClick: _this.attackMove,
-	            key: planet.id, planet: planet });
+	            key: planet.id,
+	            planet: planet,
+	            selected: selected });
 	        })
 	      ),
 	      React.createElement(
@@ -26735,7 +26742,8 @@
 	        this.props.gameMap.units.map(function (unit) {
 	          return React.createElement(Unit, { key: unit.id, unit: unit });
 	        })
-	      )
+	      ),
+	      React.createElement(ProgressBar, { units: this.props.gameMap.unitCounts() })
 	    );
 	  }
 	});
@@ -26752,19 +26760,8 @@
 	
 	var Planet = React.createClass({
 	  displayName: "Planet",
-	
-	  getInitialState: function getInitialState() {
-	    return {
-	      selected: undefined
-	    };
-	  },
-	  handleSelect: function handleSelect() {
-	    if (this.state.selected) {
-	      this.props.attackMove(this.state.selected, this.props.planet);
-	    }
-	  },
 	  render: function render() {
-	    var radius = this.props.planet.radius;
+	    var radius = this.props.planet.radius + this.props.planet.countDown / 60;
 	    var style = {
 	      width: radius * 2,
 	      height: radius * 2,
@@ -26775,7 +26772,7 @@
 	    return React.createElement(
 	      "div",
 	      { onClick: this.props.handleClick.bind(null, this.props.planet),
-	        className: "planet " + this.props.planet.owner,
+	        className: "planet " + this.props.planet.owner + " " + this.props.selected,
 	        style: style },
 	      this.props.planet.friendlyUnits
 	    );
@@ -26876,6 +26873,17 @@
 	      _this.unitId += 1;
 	    }
 	  });
+	};
+	
+	GameMap.prototype.unitCounts = function () {
+	  var counts = { playerOne: 0, playerTwo: 0, neutral: 0 };
+	  this.units.forEach(function (unit) {
+	    counts[unit.owner] += 1;
+	  });
+	  this.planets.forEach(function (planet) {
+	    counts[planet.owner] += planet.friendlyUnits;
+	  });
+	  return counts;
 	};
 	
 	GameMap.prototype.nextFrame = function () {
@@ -26997,9 +27005,9 @@
 	function Planet(id, position) {
 	  this.id = id;
 	  if (id === 0) {
-	    this.owner = "player-one";
+	    this.owner = "playerOne";
 	  } else if (id === 1) {
-	    this.owner = "player-two";
+	    this.owner = "playerTwo";
 	  } else {
 	    this.owner = "neutral";
 	  }
@@ -27008,14 +27016,14 @@
 	  this.radius = 25;
 	
 	  this.friendlyUnits = 0;
-	  this.countDown = 240;
+	  this.countDown = 180;
 	}
 	
 	Planet.prototype.nextFrame = function () {
 	  this.countDown -= 1;
 	  if (this.countDown === 0) {
 	    this.friendlyUnits += 1;
-	    this.countDown = 240;
+	    this.countDown = 180;
 	  }
 	};
 	
@@ -27050,7 +27058,7 @@
 	var Victor = __webpack_require__(242);
 	
 	function Unit(id, ownerId, position) {
-	  this.owner = ownerId === 0 ? "player-one" : "player-two";
+	  this.owner = ownerId === 0 ? "playerOne" : "playerTwo";
 	  this.id = id;
 	  this.xPos = position[0];
 	  this.yPos = position[1];
@@ -28421,6 +28429,32 @@
 		return deg / degrees;
 	}
 
+
+/***/ },
+/* 243 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	
+	var ProgressBar = React.createClass({
+	  displayName: 'ProgressBar',
+	  render: function render() {
+	    var greenStyle = { flex: this.props.units.playerOne };
+	    var neutralStyle = { flex: this.props.units.neutral };
+	    var redStyle = { flex: this.props.units.playerTwo };
+	    return React.createElement(
+	      'div',
+	      { className: 'progress-bar' },
+	      React.createElement('span', { className: 'playerOne', style: greenStyle }),
+	      React.createElement('span', { className: 'neutral', style: neutralStyle }),
+	      React.createElement('span', { className: 'playerTwo', style: redStyle })
+	    );
+	  }
+	});
+	
+	module.exports = ProgressBar;
 
 /***/ }
 /******/ ]);
