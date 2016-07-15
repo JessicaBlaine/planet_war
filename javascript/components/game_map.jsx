@@ -4,12 +4,28 @@ const Planet = require('./planet');
 const Unit = require('./unit');
 
 const GameMap = React.createClass({
+  getInitialState: function() {
+    return {
+      selectedPlanet: undefined
+    };
+  },
+  attackMove(planet) {
+    if (this.state.selectedPlanet) {
+      this.props.gameMap.attackMove(this.state.selectedPlanet, planet);
+      this.setState({ selectedPlanet: undefined });
+    }
+    else {
+      this.setState({ selectedPlanet: planet });
+    }
+
+  },
   render() {
     return <div className='map'>
       <div>
         {
           this.props.gameMap.planets.map(planet => {
-            return <Planet key={ planet.id } planet={ planet }/>;
+            return <Planet handleClick={this.attackMove}
+                           key={ planet.id } planet={ planet }/>;
           })
         }
       </div>

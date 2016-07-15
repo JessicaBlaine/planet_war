@@ -1,6 +1,12 @@
 const Planet = require('./planet');
 const Unit = require('./unit');
 
+const Victor = require('victor');
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 function GameMap() {
   this.unitId = 0;
   this.units = [];
@@ -30,11 +36,24 @@ GameMap.prototype.generateUnits = function () {
 };
 
 GameMap.prototype.nextFrame = function () {
-
-  this.attackMove(this.planets[0], this.planets[1]);
   // console.log("next frame");
   this.units.forEach(unit => unit.nextFrame());
+  this.planets.forEach(planet => planet.nextFrame());
   this.resolveCollisions(this.checkCollisions());
+  this.ensureInBounds();
+};
+
+GameMap.prototype.ensureInBounds = function () {
+  this.units.forEach(unit => {
+    if (unit.xPos >= GameMap.SIZE[0] || unit.xPos <= 0) {
+      unit.velocity.invert();
+      unit.changeDeltaV(0, 0);
+    }
+    else if (unit.yPos >= GameMap.SIZE[1] || unit.yPos <= 0) {
+      unit.velocity.invert();
+      unit.changeDeltaV(0, 0);
+    }
+  });
 };
 
 GameMap.prototype.checkCollisions = function () {
@@ -63,7 +82,7 @@ GameMap.prototype.resolveCollisions = function (collisions = []) {
       this.deleteUnit(unit);
     }
     else {
-      planet.defend(1);
+      planet.defend(1, unit.owner);
       this.deleteUnit(unit);
     }
   });
@@ -75,12 +94,52 @@ GameMap.prototype.deleteUnit = function (unit) {
 
 GameMap.prototype.attackMove = function (fromPlanet, toPlanet) {
   // debugger;
-  for (let i = 0; i < fromPlanet.moveOut(); i++) {
-    let pos = [fromPlanet.xPos + fromPlanet.radius * 2, fromPlanet.yPos];
-    let unit = new Unit(this.unitId, -1, pos);
+  let pos = () => [];
+  if (fromPlanet.yPos >= toPlanet.yPos && fromPlanet.xPos >= toPlanet.xPos) {
+
+      pos = () => {
+        let vector = new Victor(0, fromPlanet.radius + 10);
+        vector.rotateDeg(getRandomInt(-180, -270));
+        return new Victor(fromPlanet.xPos, fromPlanet.yPos).add(vector).toArray();
+      };
+  }
+  else if (
+    fromPlanet.yPos < toPlanet.yPos && fromPlanet.xPos >= toPlanet.xPos
+  ) {
+
+      pos = () => {
+        let vector = new Victor(0, fromPlanet.radius + 10);
+          vector.rotateDeg(getRandomInt(-270, -360));
+        return new Victor(fromPlanet.xPos, fromPlanet.yPos).add(vector).toArray();
+      };
+  }
+  else if (
+    fromPlanet.yPos >= toPlanet.yPos && fromPlanet.xPos < toPlanet.xPos
+  ) {
+    pos = () => {
+      let vector = new Victor(0, fromPlanet.radius + 10);
+      vector.rotateDeg(getRandomInt(-90, -180));
+      return new Victor(fromPlanet.xPos, fromPlanet.yPos).add(vector).toArray();
+    };
+  }
+  else if (
+    fromPlanet.yPos < toPlanet.yPos && fromPlanet.xPos < toPlanet.xPos
+  ) {
+      pos = () => {
+        let vector = new Victor(0, fromPlanet.radius + 10);
+          vector.rotateDeg(getRandomInt(0, -90));
+        return new Victor(fromPlanet.xPos, fromPlanet.yPos).add(vector).toArray();
+      };
+  }
+
+
+  const num = fromPlanet.moveOut();
+  for (let i = 0; i < num ; i++) {
+    let unit = new Unit(this.unitId, -1, pos());
     this.units.push(unit);
     this.unitId += 1;
     unit.owner = fromPlanet.owner;
+    unit.attack(toPlanet);
   }
 };
 

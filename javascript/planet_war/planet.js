@@ -15,7 +15,16 @@ function Planet(id, position) {
   this.radius = 25;
 
   this.friendlyUnits = 0;
+  this.countDown = 240;
 }
+
+Planet.prototype.nextFrame = function () {
+  this.countDown -= 1;
+  if (this.countDown === 0) {
+    this.friendlyUnits += 1;
+    this.countDown = 240;
+  }
+};
 
 Planet.prototype.defend = function (num, playerName) {
   const result = this.friendlyUnits - num;

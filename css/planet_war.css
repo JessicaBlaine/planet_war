@@ -5,6 +5,7 @@
   width: 1000px;
   height: 600px;
   border: 1px solid grey;
+  background: lightgrey;
 }
 
 .map {
@@ -25,11 +26,14 @@
   padding-top: 12px;
   background: grey;
 }
+.planet:hover, .planet.selected {
+  box-shadow: 0 0 0 4px lightgreen;
+}
 
 .unit.player-one {
-  /*background: url(http://res.cloudinary.com/nevermorte/image/upload/a_180/v1468020684/down-arrow_1_pf0eyo.png);
-  background-size: cover;*/
-  background: lightgreen;
+  background: url(http://res.cloudinary.com/nevermorte/image/upload/a_180/v1468020684/down-arrow_1_pf0eyo.png);
+  background-size: cover;
+  /*background: lightgreen;*/
 }
 .planet.player-one {
   background: green;
