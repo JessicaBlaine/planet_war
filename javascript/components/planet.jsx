@@ -10,8 +10,13 @@ const Planet = React.createClass({
       left: (this.props.planet.xPos - radius) + "px",
       bottom: (this.props.planet.yPos - radius) + "px"
     };
+    const className = [
+                       "planet", this.props.planet.owner,
+                       this.props.selected,
+                       this.props.target
+                     ].join(" ");
     return <div onClick={this.props.handleClick.bind(null, this.props.planet)}
-                className={ "planet " + this.props.planet.owner + " " + this.props.selected }
+                className={ className }
                 style={ style }>
       {this.props.planet.friendlyUnits}
     </div>;

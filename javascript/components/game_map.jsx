@@ -16,11 +16,14 @@ const GameMap = React.createClass({
       this.setState({ selectedPlanet: undefined });
     }
     else {
-      this.setState({ selectedPlanet: planet });
+      if (planet.owner === "playerOne") {
+        this.setState({ selectedPlanet: planet });
+      }
     }
 
   },
   render() {
+    const target = this.state.selectedPlanet ? "target" : "";
     return <div className='map'>
       <div>
         {
@@ -32,6 +35,7 @@ const GameMap = React.createClass({
             return <Planet handleClick={this.attackMove}
                            key={ planet.id }
                            planet={ planet }
+                           target={ target }
                            selected={ selected }/>;
           })
         }

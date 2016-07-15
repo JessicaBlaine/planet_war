@@ -26,7 +26,7 @@ GameMap.prototype.generatePlanets = function () {
 
 GameMap.prototype.generateUnits = function () {
   [0, 1].forEach(planetIdx => {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
       this.units.push(
         new Unit(this.unitId, planetIdx, GameMap.PLANET_POS[planetIdx])
       );
@@ -49,7 +49,16 @@ GameMap.prototype.unitCounts = function () {
 GameMap.prototype.nextFrame = function () {
   // console.log("next frame");
   this.units.forEach(unit => unit.nextFrame());
-  this.planets.forEach(planet => planet.nextFrame());
+  this.planets.forEach(planet => {
+    planet.nextFrame();
+    if (planet.owner === "playerTwo" && planet.friendlyUnits >= 10) {
+      // let target = planet.getTarget(this.planets);
+      let target = this.planets.reduce((prev, curr) => {
+        return prev.friendlyUnits <= curr.friendlyUnits ? prev : curr;
+      });
+      this.attackMove(planet, target);
+    }
+  });
   this.resolveCollisions(this.checkCollisions());
   this.ensureInBounds();
 };

@@ -15,15 +15,25 @@ function Planet(id, position) {
   this.radius = 25;
 
   this.friendlyUnits = 0;
-  this.countDown = 180;
+  this.countDown = 120;
 }
 
 Planet.prototype.nextFrame = function () {
   this.countDown -= 1;
   if (this.countDown === 0) {
     this.friendlyUnits += 1;
-    this.countDown = 180;
+    this.countDown = 120;
   }
+};
+
+Planet.prototype.getTarget = function (planets) {
+  let lowest = Number.POSITIVE_INFINITY;
+  let tmp;
+  planets.forEach(planet => {
+    tmp = planet;
+    if (tmp < lowest) lowest = tmp;
+  });
+  return lowest;
 };
 
 Planet.prototype.defend = function (num, playerName) {

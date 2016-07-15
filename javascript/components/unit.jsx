@@ -9,7 +9,7 @@ const Unit = React.createClass({
   render() {
     let radius = this.props.unit.radius;
     let style = {
-      transform: `rotate(${this.props.unit.angle + 180}deg)`,
+      transform: `rotate(${this.props.unit.angle}deg)`,
       padding: radius,
       borderRadius: radius,
       left: (this.props.unit.xPos - radius) + "px",

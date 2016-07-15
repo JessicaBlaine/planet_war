@@ -26713,12 +26713,15 @@
 	      this.props.gameMap.attackMove(this.state.selectedPlanet, planet);
 	      this.setState({ selectedPlanet: undefined });
 	    } else {
-	      this.setState({ selectedPlanet: planet });
+	      if (planet.owner === "playerOne") {
+	        this.setState({ selectedPlanet: planet });
+	      }
 	    }
 	  },
 	  render: function render() {
 	    var _this = this;
 	
+	    var target = this.state.selectedPlanet ? "target" : "";
 	    return React.createElement(
 	      'div',
 	      { className: 'map' },
@@ -26733,6 +26736,7 @@
 	          return React.createElement(Planet, { handleClick: _this.attackMove,
 	            key: planet.id,
 	            planet: planet,
+	            target: target,
 	            selected: selected });
 	        })
 	      ),
@@ -26769,10 +26773,11 @@
 	      left: this.props.planet.xPos - radius + "px",
 	      bottom: this.props.planet.yPos - radius + "px"
 	    };
+	    var className = ["planet", this.props.planet.owner, this.props.selected, this.props.target].join(" ");
 	    return React.createElement(
 	      "div",
 	      { onClick: this.props.handleClick.bind(null, this.props.planet),
-	        className: "planet " + this.props.planet.owner + " " + this.props.selected,
+	        className: className,
 	        style: style },
 	      this.props.planet.friendlyUnits
 	    );
@@ -26799,7 +26804,7 @@
 	  render: function render() {
 	    var radius = this.props.unit.radius;
 	    var style = {
-	      transform: "rotate(" + (this.props.unit.angle + 180) + "deg)",
+	      transform: "rotate(" + this.props.unit.angle + "deg)",
 	      padding: radius,
 	      borderRadius: radius,
 	      left: this.props.unit.xPos - radius + "px",
@@ -26868,7 +26873,7 @@
 	  var _this = this;
 	
 	  [0, 1].forEach(function (planetIdx) {
-	    for (var i = 0; i < 5; i++) {
+	    for (var i = 0; i < 10; i++) {
 	      _this.units.push(new Unit(_this.unitId, planetIdx, GameMap.PLANET_POS[planetIdx]));
 	      _this.unitId += 1;
 	    }
@@ -26887,12 +26892,21 @@
 	};
 	
 	GameMap.prototype.nextFrame = function () {
+	  var _this2 = this;
+	
 	  // console.log("next frame");
 	  this.units.forEach(function (unit) {
 	    return unit.nextFrame();
 	  });
 	  this.planets.forEach(function (planet) {
-	    return planet.nextFrame();
+	    planet.nextFrame();
+	    if (planet.owner === "playerTwo" && planet.friendlyUnits >= 10) {
+	      // let target = planet.getTarget(this.planets);
+	      var target = _this2.planets.reduce(function (prev, curr) {
+	        return prev.friendlyUnits <= curr.friendlyUnits ? prev : curr;
+	      });
+	      _this2.attackMove(planet, target);
+	    }
 	  });
 	  this.resolveCollisions(this.checkCollisions());
 	  this.ensureInBounds();
@@ -26911,11 +26925,11 @@
 	};
 	
 	GameMap.prototype.checkCollisions = function () {
-	  var _this2 = this;
+	  var _this3 = this;
 	
 	  var collisions = [];
 	  this.units.forEach(function (unit) {
-	    _this2.planets.forEach(function (planet) {
+	    _this3.planets.forEach(function (planet) {
 	      var dx = unit.xPos - planet.xPos;
 	      var dy = unit.yPos - planet.yPos;
 	      var distance = Math.sqrt(dx * dx + dy * dy);
@@ -26930,7 +26944,7 @@
 	};
 	
 	GameMap.prototype.resolveCollisions = function () {
-	  var _this3 = this;
+	  var _this4 = this;
 	
 	  var collisions = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 	
@@ -26939,10 +26953,10 @@
 	    var planet = collision[1];
 	    if (planet.owner === unit.owner) {
 	      planet.reinforce(1);
-	      _this3.deleteUnit(unit);
+	      _this4.deleteUnit(unit);
 	    } else {
 	      planet.defend(1, unit.owner);
-	      _this3.deleteUnit(unit);
+	      _this4.deleteUnit(unit);
 	    }
 	  });
 	};
@@ -27016,15 +27030,25 @@
 	  this.radius = 25;
 	
 	  this.friendlyUnits = 0;
-	  this.countDown = 180;
+	  this.countDown = 120;
 	}
 	
 	Planet.prototype.nextFrame = function () {
 	  this.countDown -= 1;
 	  if (this.countDown === 0) {
 	    this.friendlyUnits += 1;
-	    this.countDown = 180;
+	    this.countDown = 120;
 	  }
+	};
+	
+	Planet.prototype.getTarget = function (planets) {
+	  var lowest = Number.POSITIVE_INFINITY;
+	  var tmp = void 0;
+	  planets.forEach(function (planet) {
+	    tmp = planet;
+	    if (tmp < lowest) lowest = tmp;
+	  });
+	  return lowest;
 	};
 	
 	Planet.prototype.defend = function (num, playerName) {
@@ -28447,9 +28471,27 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'progress-bar' },
-	      React.createElement('span', { className: 'playerOne', style: greenStyle }),
+	      React.createElement(
+	        'span',
+	        { className: 'playerOne', style: greenStyle },
+	        React.createElement('div', null),
+	        React.createElement(
+	          'span',
+	          null,
+	          'You lose'
+	        )
+	      ),
 	      React.createElement('span', { className: 'neutral', style: neutralStyle }),
-	      React.createElement('span', { className: 'playerTwo', style: redStyle })
+	      React.createElement(
+	        'span',
+	        { className: 'playerTwo', style: redStyle },
+	        React.createElement('div', null),
+	        React.createElement(
+	          'span',
+	          null,
+	          'You win'
+	        )
+	      )
 	    );
 	  }
 	});
