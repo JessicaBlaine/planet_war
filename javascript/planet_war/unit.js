@@ -12,6 +12,10 @@ function Unit(id, ownerId, position) {
   this.angle = 0;
 }
 
+Unit.prototype.getAngle = function () {
+  return 0 - (this.velocity.clone().horizontalAngleDeg() + 90);
+};
+
 Unit.prototype.nextFrame = function () {
   this.xPos += this.velocity.x;
   this.yPos += this.velocity.y;
@@ -21,6 +25,7 @@ Unit.prototype.nextFrame = function () {
   else if (this.velocity.length() >= 18.1) {
     this.velocity.norm().multiplyScalar(18);
   }
+  this.angle = this.getAngle();
 };
 
 Unit.prototype.rotation = function() {

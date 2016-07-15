@@ -104,8 +104,13 @@ GameMap.prototype.resolveCollisions = function (collisions = []) {
     let unit = collision[0];
     let planet = collision[1];
     if (planet.owner === unit.owner) {
-      planet.reinforce(1);
-      this.deleteUnit(unit);
+      if (planet.friendlyUnits >= 50) {
+        unit.velocity.invert();
+        unit.changeDeltaV(0, 0);
+      } else {
+        planet.reinforce(1);
+        this.deleteUnit(unit);
+      }
     }
     else {
       planet.defend(1, unit.owner);
@@ -158,6 +163,9 @@ GameMap.prototype.attackMove = function (fromPlanet, toPlanet) {
       };
   }
 
+  if (fromPlanet.owner === toPlanet.owner && toPlanet.friendlyUnits >= 50) {
+    return;
+  }
 
   const num = fromPlanet.moveOut();
   for (let i = 0; i < num ; i++) {

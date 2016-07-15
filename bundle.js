@@ -26958,8 +26958,13 @@
 	    var unit = collision[0];
 	    var planet = collision[1];
 	    if (planet.owner === unit.owner) {
-	      planet.reinforce(1);
-	      _this4.deleteUnit(unit);
+	      if (planet.friendlyUnits >= 50) {
+	        unit.velocity.invert();
+	        unit.changeDeltaV(0, 0);
+	      } else {
+	        planet.reinforce(1);
+	        _this4.deleteUnit(unit);
+	      }
 	    } else {
 	      planet.defend(1, unit.owner);
 	      _this4.deleteUnit(unit);
@@ -27004,6 +27009,10 @@
 	    };
 	  }
 	
+	  if (fromPlanet.owner === toPlanet.owner && toPlanet.friendlyUnits >= 50) {
+	    return;
+	  }
+	
 	  var num = fromPlanet.moveOut();
 	  for (var i = 0; i < num; i++) {
 	    var unit = new Unit(this.unitId, -1, pos());
@@ -27046,6 +27055,9 @@
 	    this.countDown = 120;
 	    if (this.owner === "neutral" && this.friendlyUnits > 10) {
 	      this.friendlyUnits = 10;
+	    }
+	    if (this.friendlyUnits > 50) {
+	      this.friendlyUnits = 50;
 	    }
 	  }
 	};
@@ -27102,6 +27114,10 @@
 	  this.angle = 0;
 	}
 	
+	Unit.prototype.getAngle = function () {
+	  return 0 - (this.velocity.clone().horizontalAngleDeg() + 90);
+	};
+	
 	Unit.prototype.nextFrame = function () {
 	  this.xPos += this.velocity.x;
 	  this.yPos += this.velocity.y;
@@ -27110,6 +27126,7 @@
 	  } else if (this.velocity.length() >= 18.1) {
 	    this.velocity.norm().multiplyScalar(18);
 	  }
+	  this.angle = this.getAngle();
 	};
 	
 	Unit.prototype.rotation = function () {
