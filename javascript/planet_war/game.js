@@ -7,6 +7,7 @@ function Game() {
 Game.prototype.run = function (screenState) {
   this.gameMap.nextFrame();
   screenState.setState({ gameMap: this.gameMap });
+  if (this.gameMap.isOver()) return;
 
   requestAnimationFrame(this.run.bind(this, screenState));
 };

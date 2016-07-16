@@ -18,6 +18,20 @@ function GameMap() {
 GameMap.SIZE = [1000, 600];
 GameMap.PLANET_POS = [[100, 100], [900, 500], [100, 500], [900, 100]];
 
+GameMap.prototype.isOver = function () {
+  if (this.planets.some(planet => planet.owner === "playerOne")) {
+    if (this.planets.some(planet => planet.owner === "playerTwo")) {
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
+  else if (this.planets.some(planet => planet.owner === "playerTwo")) {
+    return true;
+  }
+};
+
 GameMap.prototype.generatePlanets = function () {
   this.planets = GameMap.PLANET_POS.map((index, planetPos) => {
     return new Planet(planetPos, index);
