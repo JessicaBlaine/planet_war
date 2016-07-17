@@ -70,11 +70,9 @@ GameMap.prototype.nextFrame = function () {
       let planets = this.planets.filter(enemyPlanet => {
         return enemyPlanet.owner !== "playerTwo";
       });
-      console.log(planets);
       let target = planets.reduce((prev, curr) => {
         return prev.friendlyUnits <= curr.friendlyUnits ? prev : curr;
       });
-      console.log(planet, target);
       this.attackMove(planet, target);
     }
   });
@@ -106,6 +104,17 @@ GameMap.prototype.checkCollisions = function () {
       if (distance < unit.radius + planet.radius) {
         // collision detected
         collisions.push([unit, planet]);
+      }
+    });
+    this.units.forEach(otherUnit => {
+      if (unit.owner === otherUnit.owner) return;
+      let dx = unit.xPos - otherUnit.xPos;
+      let dy = unit.yPos - otherUnit.yPos;
+      let distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < unit.radius + otherUnit.radius) {
+        this.deleteUnit(unit);
+        this.deleteUnit(otherUnit);
       }
     });
   });
@@ -140,7 +149,6 @@ GameMap.prototype.attackMove = function (fromPlanet, toPlanet) {
   // debugger;
   let pos = () => [];
   if (fromPlanet.yPos >= toPlanet.yPos && fromPlanet.xPos >= toPlanet.xPos) {
-
       pos = () => {
         let vector = new Victor(0, fromPlanet.radius + 10);
         vector.rotateDeg(getRandomInt(-180, -270));
@@ -150,7 +158,6 @@ GameMap.prototype.attackMove = function (fromPlanet, toPlanet) {
   else if (
     fromPlanet.yPos < toPlanet.yPos && fromPlanet.xPos >= toPlanet.xPos
   ) {
-
       pos = () => {
         let vector = new Victor(0, fromPlanet.radius + 10);
           vector.rotateDeg(getRandomInt(-270, -360));
@@ -186,7 +193,7 @@ GameMap.prototype.attackMove = function (fromPlanet, toPlanet) {
     this.units.push(unit);
     this.unitId += 1;
     unit.owner = fromPlanet.owner;
-    unit.attack(toPlanet);
+    unit.moveOut(fromPlanet, toPlanet);
   }
 };
 

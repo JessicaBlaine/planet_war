@@ -40,6 +40,16 @@ Unit.prototype.changeDeltaV = function(x, y) {
   this.deltaV = new Victor(x, y);
 };
 
+Unit.prototype.moveOut = function (fromPlanet, toPlanet) {
+  const vector = new Victor(this.xPos, this.yPos)
+    .subtract(new Victor(fromPlanet.xPos, fromPlanet.yPos)).norm();
+  this.velocity = vector.clone().multiplyScalar(6);
+  this.deltaV = vector.clone().invert().multiplyScalar(0.2);
+  // debugger;
+
+  setTimeout(() => this.attack(toPlanet), 500);
+};
+
 Unit.prototype.attack = function (planet) {
   let attackVector = new Victor(planet.xPos, planet.yPos)
     .subtract(new Victor(this.xPos, this.yPos));

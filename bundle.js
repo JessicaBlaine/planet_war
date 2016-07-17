@@ -27000,11 +27000,9 @@
 	      var planets = _this2.planets.filter(function (enemyPlanet) {
 	        return enemyPlanet.owner !== "playerTwo";
 	      });
-	      console.log(planets);
 	      var target = planets.reduce(function (prev, curr) {
 	        return prev.friendlyUnits <= curr.friendlyUnits ? prev : curr;
 	      });
-	      console.log(planet, target);
 	      _this2.attackMove(planet, target);
 	    }
 	  });
@@ -27037,6 +27035,17 @@
 	      if (distance < unit.radius + planet.radius) {
 	        // collision detected
 	        collisions.push([unit, planet]);
+	      }
+	    });
+	    _this3.units.forEach(function (otherUnit) {
+	      if (unit.owner === otherUnit.owner) return;
+	      var dx = unit.xPos - otherUnit.xPos;
+	      var dy = unit.yPos - otherUnit.yPos;
+	      var distance = Math.sqrt(dx * dx + dy * dy);
+	
+	      if (distance < unit.radius + otherUnit.radius) {
+	        _this3.deleteUnit(unit);
+	        _this3.deleteUnit(otherUnit);
 	      }
 	    });
 	  });
@@ -27076,14 +27085,12 @@
 	    return [];
 	  };
 	  if (fromPlanet.yPos >= toPlanet.yPos && fromPlanet.xPos >= toPlanet.xPos) {
-	
 	    pos = function pos() {
 	      var vector = new Victor(0, fromPlanet.radius + 10);
 	      vector.rotateDeg(getRandomInt(-180, -270));
 	      return new Victor(fromPlanet.xPos, fromPlanet.yPos).add(vector).toArray();
 	    };
 	  } else if (fromPlanet.yPos < toPlanet.yPos && fromPlanet.xPos >= toPlanet.xPos) {
-	
 	    pos = function pos() {
 	      var vector = new Victor(0, fromPlanet.radius + 10);
 	      vector.rotateDeg(getRandomInt(-270, -360));
@@ -27113,7 +27120,7 @@
 	    this.units.push(unit);
 	    this.unitId += 1;
 	    unit.owner = fromPlanet.owner;
-	    unit.attack(toPlanet);
+	    unit.moveOut(fromPlanet, toPlanet);
 	  }
 	};
 	
@@ -27237,6 +27244,19 @@
 	
 	Unit.prototype.changeDeltaV = function (x, y) {
 	  this.deltaV = new Victor(x, y);
+	};
+	
+	Unit.prototype.moveOut = function (fromPlanet, toPlanet) {
+	  var _this = this;
+	
+	  var vector = new Victor(this.xPos, this.yPos).subtract(new Victor(fromPlanet.xPos, fromPlanet.yPos)).norm();
+	  this.velocity = vector.clone().multiplyScalar(6);
+	  this.deltaV = vector.clone().invert().multiplyScalar(0.2);
+	  // debugger;
+	
+	  setTimeout(function () {
+	    return _this.attack(toPlanet);
+	  }, 500);
 	};
 	
 	Unit.prototype.attack = function (planet) {
