@@ -26938,7 +26938,11 @@
 	}
 	
 	GameMap.SIZE = [1000, 600];
-	GameMap.PLANET_POS = [[100, 300], [900, 300], [500, 500], [500, 100]];
+	GameMap.PLANET_POS = [1, 2, 3, 4, 5, 6].map(function () {
+	  return [getRandomInt(100, 900), getRandomInt(100, 500)];
+	});
+	
+	// [[100, 300], [900, 300], [500, 500], [500, 100]];
 	
 	GameMap.prototype.isOver = function (gameOverCallback) {
 	  if (this.planets.some(function (planet) {
@@ -26961,18 +26965,36 @@
 	};
 	
 	GameMap.prototype.generatePlanets = function () {
+	  var _this = this;
+	
+	  GameMap.PLANET_POS = [1, 2, 3, 4, 5, 6].map(function () {
+	    return [getRandomInt(100, 900), getRandomInt(100, 500)];
+	  });
 	  this.planets = GameMap.PLANET_POS.map(function (index, planetPos) {
 	    return new Planet(planetPos, index);
+	  });
+	  this.planets.forEach(function (planet) {
+	    _this.planets.forEach(function (otherPlanet) {
+	      var dx = planet.xPos - otherPlanet.xPos;
+	      var dy = planet.yPos - otherPlanet.yPos;
+	      var distance = Math.sqrt(dx * dx + dy * dy);
+	
+	      if (planet.id !== otherPlanet.id && distance < planet.radius + otherPlanet.radius) {
+	        var factor = (planet.radius + otherPlanet.radius) / distance;
+	        otherPlanet.xPos = otherPlanet.xPos * factor + 5;
+	        otherPlanet.yPos = otherPlanet.yPos * factor + 5;
+	      }
+	    });
 	  });
 	};
 	
 	GameMap.prototype.generateUnits = function () {
-	  var _this = this;
+	  var _this2 = this;
 	
 	  [0, 1].forEach(function (planetIdx) {
 	    for (var i = 0; i < 10; i++) {
-	      _this.units.push(new Unit(_this.unitId, planetIdx, GameMap.PLANET_POS[planetIdx]));
-	      _this.unitId += 1;
+	      _this2.units.push(new Unit(_this2.unitId, planetIdx, GameMap.PLANET_POS[planetIdx]));
+	      _this2.unitId += 1;
 	    }
 	  });
 	};
@@ -26989,7 +27011,7 @@
 	};
 	
 	GameMap.prototype.nextFrame = function () {
-	  var _this2 = this;
+	  var _this3 = this;
 	
 	  this.units.forEach(function (unit) {
 	    return unit.nextFrame();
@@ -26997,13 +27019,13 @@
 	  this.planets.forEach(function (planet) {
 	    planet.nextFrame();
 	    if (planet.owner === "playerTwo" && planet.friendlyUnits >= 9) {
-	      var planets = _this2.planets.filter(function (enemyPlanet) {
+	      var planets = _this3.planets.filter(function (enemyPlanet) {
 	        return enemyPlanet.owner !== "playerTwo";
 	      });
 	      var target = planets.reduce(function (prev, curr) {
 	        return prev.friendlyUnits <= curr.friendlyUnits ? prev : curr;
 	      });
-	      _this2.attackMove(planet, target);
+	      _this3.attackMove(planet, target);
 	    }
 	  });
 	  this.resolveCollisions(this.checkCollisions());
@@ -27023,11 +27045,11 @@
 	};
 	
 	GameMap.prototype.checkCollisions = function () {
-	  var _this3 = this;
+	  var _this4 = this;
 	
 	  var collisions = [];
 	  this.units.forEach(function (unit) {
-	    _this3.planets.forEach(function (planet) {
+	    _this4.planets.forEach(function (planet) {
 	      var dx = unit.xPos - planet.xPos;
 	      var dy = unit.yPos - planet.yPos;
 	      var distance = Math.sqrt(dx * dx + dy * dy);
@@ -27037,23 +27059,24 @@
 	        collisions.push([unit, planet]);
 	      }
 	    });
-	    _this3.units.forEach(function (otherUnit) {
+	    _this4.units.forEach(function (otherUnit) {
 	      if (unit.owner === otherUnit.owner) return;
 	      var dx = unit.xPos - otherUnit.xPos;
 	      var dy = unit.yPos - otherUnit.yPos;
 	      var distance = Math.sqrt(dx * dx + dy * dy);
 	
 	      if (distance < unit.radius + otherUnit.radius) {
-	        _this3.deleteUnit(unit);
-	        _this3.deleteUnit(otherUnit);
+	        _this4.deleteUnit(unit);
+	        _this4.deleteUnit(otherUnit);
 	      }
 	    });
 	  });
+	
 	  this.resolveCollisions(collisions);
 	};
 	
 	GameMap.prototype.resolveCollisions = function () {
-	  var _this4 = this;
+	  var _this5 = this;
 	
 	  var collisions = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 	
@@ -27066,11 +27089,11 @@
 	        unit.changeDeltaV(0, 0);
 	      } else {
 	        planet.reinforce(1);
-	        _this4.deleteUnit(unit);
+	        _this5.deleteUnit(unit);
 	      }
 	    } else {
 	      planet.defend(1, unit.owner);
-	      _this4.deleteUnit(unit);
+	      _this5.deleteUnit(unit);
 	    }
 	  });
 	};

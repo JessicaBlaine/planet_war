@@ -16,7 +16,11 @@ function GameMap() {
 }
 
 GameMap.SIZE = [1000, 600];
-GameMap.PLANET_POS = [[100, 300], [900, 300], [500, 500], [500, 100]];
+GameMap.PLANET_POS = [1, 2, 3, 4, 5, 6].map( () => {
+  return [getRandomInt(100, 900), getRandomInt(100, 500)];
+});
+
+// [[100, 300], [900, 300], [500, 500], [500, 100]];
 
 GameMap.prototype.isOver = function (gameOverCallback) {
   if (this.planets.some(planet => planet.owner === "playerOne")) {
@@ -35,8 +39,25 @@ GameMap.prototype.isOver = function (gameOverCallback) {
 };
 
 GameMap.prototype.generatePlanets = function () {
+  GameMap.PLANET_POS = [1, 2, 3, 4, 5, 6].map( () => {
+    return [getRandomInt(100, 900), getRandomInt(100, 500)];
+  });
   this.planets = GameMap.PLANET_POS.map((index, planetPos) => {
     return new Planet(planetPos, index);
+  });
+  this.planets.forEach(planet => {
+    this.planets.forEach(otherPlanet => {
+      let dx = planet.xPos - otherPlanet.xPos;
+      let dy = planet.yPos - otherPlanet.yPos;
+      let distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (planet.id !== otherPlanet.id &&
+          distance < planet.radius + otherPlanet.radius) {
+        let factor = (planet.radius + otherPlanet.radius) / distance;
+        otherPlanet.xPos = otherPlanet.xPos * factor + 5;
+        otherPlanet.yPos = otherPlanet.yPos * factor + 5;
+      }
+    });
   });
 };
 
@@ -118,6 +139,7 @@ GameMap.prototype.checkCollisions = function () {
       }
     });
   });
+
   this.resolveCollisions(collisions);
 };
 
