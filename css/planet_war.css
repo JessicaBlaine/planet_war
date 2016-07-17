@@ -1,9 +1,17 @@
+html,
+body,
+button {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
 body {
   background: #343477;
 }
 .screen {
   position: relative;
-  margin: 0 auto;
+  margin: 10px auto;
   width: 1000px;
   height: 600px;
   /*border: 1px solid grey;*/
@@ -13,7 +21,7 @@ body {
 }
 
 .map {
-  position: relative;
+  position: absolute;
   width: 100%;
   height: 100%;
 }
@@ -25,17 +33,18 @@ body {
   display: flex;
   width: 100%;
 }
-
-.playerOne {
-  background: #116611;
-  transition: flex 0.3s ease-in-out 0s;
+.progress-bar .playerOne {
+    background: #116611;
+    transition: flex 0.3s ease-in-out 0s;
+    border-right: 1px solid black;
 }
 .playerOne div {
   width: 10px;
   height: 10px;
   transform: rotate(45deg);
-  background: #004400;
+  background: #D46A6A;
   position: absolute;
+  left: -4px;
   bottom: -12px;
 }
 .playerOne span {
@@ -43,34 +52,35 @@ body {
   font-family: Helvetica, sans-serif;
   padding: 3px;
   position: absolute;
-  background: #004400;
-  bottom: -31px;
+  background: #D46A6A;
+  bottom: -35px;
   left: -28px;
 }
 .neutral {
   background: grey;
   transition: flex 0.3s ease-in-out 0s;
 }
-.playerTwo {
+.progress-bar .playerTwo {
   background: #801515;
   transition: flex 0.3s ease-in-out 0s;
+  border-left: 1px solid black;
 }
 .playerTwo div {
   width: 10px;
   height: 10px;
   transform: rotate(45deg);
-  background: #004400;
+  background: #55AA55;
   position: absolute;
   bottom: -12px;
-  right: 0;
+  right: -4px;
 }
 .playerTwo span {
   color: white;
   font-family: Helvetica, sans-serif;
   padding: 3px;
   position: absolute;
-  background: #004400;
-  bottom: -31px;
+  background: #55AA55;
+  bottom: -35px;
   right: -28px;
 }
 
@@ -118,4 +128,42 @@ body {
 }
 .planet.playerTwo {
   background: #801515;
+}
+
+.modal {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(55, 55, 55, 0.8);
+}
+.modal .content {
+  margin: 135px auto;
+  text-align: center;
+  width: 400px;
+  background: whitesmoke;
+  border-radius: 3px;
+}
+.modal span {
+  font-family: Helvetica;
+  display: block;
+  padding: 25px;
+}
+.modal button {
+  font-family: Helvetica;
+  font-size: 18px;
+  outline: none;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  margin: 25px;
+  padding: 10px;
+  background: #343477;
+  color: white;
+  transition: background 0.1s ease-in-out 0s, color 0.1s ease-in-out 0s;
+}
+.modal button:hover {
+  transition: background 0.1s ease-in-out 0s, color 0.1s ease-in-out 0s;
+  cursor: pointer;
+  border: 1px solid black;
+  color: #343477;
+  background: white;
 }

@@ -1,8 +1,17 @@
 
 function Planet(id, position) {
   this.id = id;
+
+  this.xPos = position[0];
+  this.yPos = position[1];
+  this.radius = 25;
+
+  this.friendlyUnits = 0;
+  this.countDown = 120;
+
   if (id === 0) {
     this.owner = "playerOne";
+    // this.friendlyUnits = 40;
   }
   else if (id === 1) {
     this.owner = "playerTwo";
@@ -10,12 +19,6 @@ function Planet(id, position) {
   else {
     this.owner = "neutral";
   }
-  this.xPos = position[0];
-  this.yPos = position[1];
-  this.radius = 25;
-
-  this.friendlyUnits = 0;
-  this.countDown = 120;
 }
 
 Planet.prototype.nextFrame = function () {
@@ -47,6 +50,7 @@ Planet.prototype.defend = function (num, playerName) {
   if (result < 0) {
     this.owner = playerName;
     this.friendlyUnits = 0 - result;
+    // this.countDown = 120;
   }
   else if (result >= 0) {
     this.friendlyUnits = result;

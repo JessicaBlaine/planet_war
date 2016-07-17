@@ -16,18 +16,20 @@ function GameMap() {
 }
 
 GameMap.SIZE = [1000, 600];
-GameMap.PLANET_POS = [[100, 100], [900, 500], [100, 500], [900, 100]];
+GameMap.PLANET_POS = [[100, 300], [900, 300], [500, 500], [500, 100]];
 
-GameMap.prototype.isOver = function () {
+GameMap.prototype.isOver = function (gameOverCallback) {
   if (this.planets.some(planet => planet.owner === "playerOne")) {
     if (this.planets.some(planet => planet.owner === "playerTwo")) {
       return false;
     }
     else {
+      gameOverCallback("You win!");
       return true;
     }
   }
   else if (this.planets.some(planet => planet.owner === "playerTwo")) {
+    gameOverCallback("You lose.");
     return true;
   }
 };
@@ -61,13 +63,10 @@ GameMap.prototype.unitCounts = function () {
 };
 
 GameMap.prototype.nextFrame = function () {
-  // console.log("next frame");
   this.units.forEach(unit => unit.nextFrame());
   this.planets.forEach(planet => {
     planet.nextFrame();
     if (planet.owner === "playerTwo" && planet.friendlyUnits >= 9) {
-      // let target = planet.getTarget(this.planets);
-      // debugger;
       let planets = this.planets.filter(enemyPlanet => {
         return enemyPlanet.owner !== "playerTwo";
       });

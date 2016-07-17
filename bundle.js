@@ -57,7 +57,7 @@
 	// components
 	var Screen = __webpack_require__(234);
 	// game logic
-	var Game = window.Game = __webpack_require__(238);
+	var Game = window.Game = __webpack_require__(239);
 	
 	var GameRouter = React.createElement(
 	  Router,
@@ -26666,22 +26666,54 @@
 	
 	var GameMap = __webpack_require__(235);
 	
+	var Game = __webpack_require__(239);
+	
 	var Screen = React.createClass({
 	  displayName: 'Screen',
 	
 	  getInitialState: function getInitialState() {
 	    return {
-	      gameMap: this.props.game.gameMap
+	      gameMap: this.props.game.gameMap,
+	      modal: ""
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
 	    this.props.game.run(this);
 	  },
+	  gameOver: function gameOver(contentString) {
+	    this.setState({
+	      modal: React.createElement(
+	        'div',
+	        { className: 'modal' },
+	        React.createElement(
+	          'div',
+	          { className: 'content' },
+	          React.createElement(
+	            'span',
+	            null,
+	            contentString
+	          ),
+	          React.createElement(
+	            'button',
+	            { onClick: this.resetGame },
+	            'Play again?'
+	          )
+	        )
+	      )
+	    });
+	  },
+	  resetGame: function resetGame() {
+	    var game = new Game();
+	    this.setState({
+	      gameMap: game.gameMap, modal: ""
+	    }, game.run(this));
+	  },
 	  render: function render() {
 	    return React.createElement(
 	      'div',
 	      { className: 'screen' },
-	      React.createElement(GameMap, { gameMap: this.state.gameMap })
+	      React.createElement(GameMap, { gameMap: this.state.gameMap }),
+	      this.state.modal
 	    );
 	  }
 	});
@@ -26698,7 +26730,7 @@
 	
 	var Planet = __webpack_require__(236);
 	var Unit = __webpack_require__(237);
-	var ProgressBar = __webpack_require__(243);
+	var ProgressBar = __webpack_require__(238);
 	
 	var GameMap = React.createClass({
 	  displayName: 'GameMap',
@@ -26822,7 +26854,51 @@
 
 	'use strict';
 	
-	var GameMap = __webpack_require__(239);
+	var React = __webpack_require__(1);
+	
+	var ProgressBar = React.createClass({
+	  displayName: 'ProgressBar',
+	  render: function render() {
+	    var greenStyle = { flex: this.props.units.playerOne };
+	    var neutralStyle = { flex: this.props.units.neutral };
+	    var redStyle = { flex: this.props.units.playerTwo };
+	    return React.createElement(
+	      'div',
+	      { className: 'progress-bar' },
+	      React.createElement(
+	        'span',
+	        { className: 'playerOne', style: greenStyle },
+	        React.createElement('div', null),
+	        React.createElement(
+	          'span',
+	          null,
+	          'You lose'
+	        )
+	      ),
+	      React.createElement('span', { className: 'neutral', style: neutralStyle }),
+	      React.createElement(
+	        'span',
+	        { className: 'playerTwo', style: redStyle },
+	        React.createElement('div', null),
+	        React.createElement(
+	          'span',
+	          null,
+	          'You win'
+	        )
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = ProgressBar;
+
+/***/ },
+/* 239 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var GameMap = __webpack_require__(240);
 	
 	function Game() {
 	  this.gameMap = new GameMap();
@@ -26831,7 +26907,7 @@
 	Game.prototype.run = function (screenState) {
 	  this.gameMap.nextFrame();
 	  screenState.setState({ gameMap: this.gameMap });
-	  if (this.gameMap.isOver()) return;
+	  if (this.gameMap.isOver(screenState.gameOver)) return;
 	
 	  requestAnimationFrame(this.run.bind(this, screenState));
 	};
@@ -26839,15 +26915,15 @@
 	module.exports = Game;
 
 /***/ },
-/* 239 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Planet = __webpack_require__(240);
-	var Unit = __webpack_require__(241);
+	var Planet = __webpack_require__(241);
+	var Unit = __webpack_require__(242);
 	
-	var Victor = __webpack_require__(242);
+	var Victor = __webpack_require__(243);
 	
 	function getRandomInt(min, max) {
 	  return Math.floor(Math.random() * (max - min)) + min;
@@ -26862,9 +26938,9 @@
 	}
 	
 	GameMap.SIZE = [1000, 600];
-	GameMap.PLANET_POS = [[100, 100], [900, 500], [100, 500], [900, 100]];
+	GameMap.PLANET_POS = [[100, 300], [900, 300], [500, 500], [500, 100]];
 	
-	GameMap.prototype.isOver = function () {
+	GameMap.prototype.isOver = function (gameOverCallback) {
 	  if (this.planets.some(function (planet) {
 	    return planet.owner === "playerOne";
 	  })) {
@@ -26873,11 +26949,13 @@
 	    })) {
 	      return false;
 	    } else {
+	      gameOverCallback("You win!");
 	      return true;
 	    }
 	  } else if (this.planets.some(function (planet) {
 	    return planet.owner === "playerTwo";
 	  })) {
+	    gameOverCallback("You lose.");
 	    return true;
 	  }
 	};
@@ -26913,15 +26991,12 @@
 	GameMap.prototype.nextFrame = function () {
 	  var _this2 = this;
 	
-	  // console.log("next frame");
 	  this.units.forEach(function (unit) {
 	    return unit.nextFrame();
 	  });
 	  this.planets.forEach(function (planet) {
 	    planet.nextFrame();
 	    if (planet.owner === "playerTwo" && planet.friendlyUnits >= 9) {
-	      // let target = planet.getTarget(this.planets);
-	      // debugger;
 	      var planets = _this2.planets.filter(function (enemyPlanet) {
 	        return enemyPlanet.owner !== "playerTwo";
 	      });
@@ -27045,26 +27120,29 @@
 	module.exports = GameMap;
 
 /***/ },
-/* 240 */
+/* 241 */
 /***/ function(module, exports) {
 
 	"use strict";
 	
 	function Planet(id, position) {
 	  this.id = id;
-	  if (id === 0) {
-	    this.owner = "playerOne";
-	  } else if (id === 1) {
-	    this.owner = "playerTwo";
-	  } else {
-	    this.owner = "neutral";
-	  }
+	
 	  this.xPos = position[0];
 	  this.yPos = position[1];
 	  this.radius = 25;
 	
 	  this.friendlyUnits = 0;
 	  this.countDown = 120;
+	
+	  if (id === 0) {
+	    this.owner = "playerOne";
+	    // this.friendlyUnits = 40;
+	  } else if (id === 1) {
+	    this.owner = "playerTwo";
+	  } else {
+	    this.owner = "neutral";
+	  }
 	}
 	
 	Planet.prototype.nextFrame = function () {
@@ -27096,6 +27174,7 @@
 	  if (result < 0) {
 	    this.owner = playerName;
 	    this.friendlyUnits = 0 - result;
+	    // this.countDown = 120;
 	  } else if (result >= 0) {
 	    this.friendlyUnits = result;
 	  }
@@ -27114,12 +27193,12 @@
 	module.exports = Planet;
 
 /***/ },
-/* 241 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
-	var Victor = __webpack_require__(242);
+	var Victor = __webpack_require__(243);
 	
 	function Unit(id, ownerId, position) {
 	  this.owner = ownerId === 0 ? "playerOne" : "playerTwo";
@@ -27170,7 +27249,7 @@
 	module.exports = Unit;
 
 /***/ },
-/* 242 */
+/* 243 */
 /***/ function(module, exports) {
 
 	exports = module.exports = Victor;
@@ -28498,50 +28577,6 @@
 		return deg / degrees;
 	}
 
-
-/***/ },
-/* 243 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var React = __webpack_require__(1);
-	
-	var ProgressBar = React.createClass({
-	  displayName: 'ProgressBar',
-	  render: function render() {
-	    var greenStyle = { flex: this.props.units.playerOne };
-	    var neutralStyle = { flex: this.props.units.neutral };
-	    var redStyle = { flex: this.props.units.playerTwo };
-	    return React.createElement(
-	      'div',
-	      { className: 'progress-bar' },
-	      React.createElement(
-	        'span',
-	        { className: 'playerOne', style: greenStyle },
-	        React.createElement('div', null),
-	        React.createElement(
-	          'span',
-	          null,
-	          'You lose'
-	        )
-	      ),
-	      React.createElement('span', { className: 'neutral', style: neutralStyle }),
-	      React.createElement(
-	        'span',
-	        { className: 'playerTwo', style: redStyle },
-	        React.createElement('div', null),
-	        React.createElement(
-	          'span',
-	          null,
-	          'You win'
-	        )
-	      )
-	    );
-	  }
-	});
-	
-	module.exports = ProgressBar;
 
 /***/ }
 /******/ ]);
