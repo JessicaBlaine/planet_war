@@ -6,20 +6,31 @@ const Game = require('../planet_war/game');
 
 const Screen = React.createClass({
   getInitialState: function() {
+    const game = new Game;
     return {
-      gameMap: this.props.game.gameMap,
-      modal: ""
+      game: game,
+      gameMap: game.gameMap,
+      modal: <div className="modal">
+        <div className="content">
+          <span>How to Play</span>
+          <img src="http://res.cloudinary.com/nevermorte/image/upload/v1468794923/PlanetWar_instructions.png"/>
+          <button onClick={ this.startGame }>Start</button>
+        </div>
+      </div>
     };
   },
+  startGame() {
+    this.setState({ modal: "" }, () => this.state.game.run(this));
+  },
   componentDidMount() {
-    this.props.game.run(this);
+    // this.state.game.run(this);
   },
   gameOver(contentString) {
     this.setState({
       modal: <div className="modal">
         <div className="content">
           <span>{contentString}</span>
-          <button onClick={ this.resetGame }>Play again?</button>
+          <button onClick={ this.resetGame }>Play again</button>
         </div>
       </div>
     });

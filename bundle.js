@@ -56,8 +56,6 @@
 	var hashHistory = ReactRouter.hashHistory;
 	// components
 	var Screen = __webpack_require__(234);
-	// game logic
-	var Game = window.Game = __webpack_require__(239);
 	
 	var GameRouter = React.createElement(
 	  Router,
@@ -67,7 +65,7 @@
 	
 	document.addEventListener("DOMContentLoaded", function () {
 	  var root = document.getElementById('root');
-	  ReactDom.render(React.createElement(Screen, { game: new Game() }), root);
+	  ReactDom.render(React.createElement(Screen, null), root);
 	});
 
 /***/ },
@@ -26672,13 +26670,40 @@
 	  displayName: 'Screen',
 	
 	  getInitialState: function getInitialState() {
+	    var game = new Game();
 	    return {
-	      gameMap: this.props.game.gameMap,
-	      modal: ""
+	      game: game,
+	      gameMap: game.gameMap,
+	      modal: React.createElement(
+	        'div',
+	        { className: 'modal' },
+	        React.createElement(
+	          'div',
+	          { className: 'content' },
+	          React.createElement(
+	            'span',
+	            null,
+	            'How to Play'
+	          ),
+	          React.createElement('img', { src: 'http://res.cloudinary.com/nevermorte/image/upload/v1468794923/PlanetWar_instructions.png' }),
+	          React.createElement(
+	            'button',
+	            { onClick: this.startGame },
+	            'Start'
+	          )
+	        )
+	      )
 	    };
 	  },
+	  startGame: function startGame() {
+	    var _this = this;
+	
+	    this.setState({ modal: "" }, function () {
+	      return _this.state.game.run(_this);
+	    });
+	  },
 	  componentDidMount: function componentDidMount() {
-	    this.props.game.run(this);
+	    // this.state.game.run(this);
 	  },
 	  gameOver: function gameOver(contentString) {
 	    this.setState({
@@ -26696,7 +26721,7 @@
 	          React.createElement(
 	            'button',
 	            { onClick: this.resetGame },
-	            'Play again?'
+	            'Play again'
 	          )
 	        )
 	      )

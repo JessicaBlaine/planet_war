@@ -8,8 +8,6 @@ const IndexRoute = ReactRouter.IndexRoute;
 const hashHistory = ReactRouter.hashHistory;
 // components
 const Screen = require('./components/screen');
-// game logic
-const Game = window.Game = require('./planet_war/game');
 
 const GameRouter = (
   <Router history={ hashHistory }>
@@ -21,5 +19,5 @@ const GameRouter = (
 
 document.addEventListener("DOMContentLoaded", () => {
   const root = document.getElementById('root');
-  ReactDom.render(<Screen game={ new Game }/>, root);
+  ReactDom.render(<Screen />, root);
 });
