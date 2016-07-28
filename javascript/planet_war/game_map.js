@@ -87,7 +87,7 @@ GameMap.prototype.nextFrame = function () {
   this.units.forEach(unit => unit.nextFrame());
   this.planets.forEach(planet => {
     planet.nextFrame();
-    if (planet.owner === "playerTwo" && planet.friendlyUnits >= 9) {
+    if (planet.owner === "playerTwo" && planet.friendlyUnits >= 11) {
       let planets = this.planets.filter(enemyPlanet => {
         return enemyPlanet.owner !== "playerTwo";
       });
@@ -205,7 +205,8 @@ GameMap.prototype.attackMove = function (fromPlanet, toPlanet) {
       };
   }
 
-  if (fromPlanet.owner === toPlanet.owner && toPlanet.friendlyUnits >= 50) {
+  if (fromPlanet.owner === toPlanet.owner &&
+      toPlanet.friendlyUnits + fromPlanet.friendlyUnits / 2 >= 50) {
     return;
   }
 
